@@ -3,7 +3,6 @@ import re
 import os
 import urllib.request
 import requests
-import speech_recognition as sr
 from pytube import YouTube
 from youtube_transcript_api import YouTubeTranscriptApi
 from moviepy.editor import *
@@ -12,7 +11,6 @@ from moviepy.editor import *
 API_KEY = "AIzaSyD32jTMAOgRKs9Ao4wn9Px-IF94CunvWyo"
 
 # This class holds all the video data
-
 
 class YoutubeStats:
     def __init__(self, url, id):
@@ -42,15 +40,15 @@ class YoutubeStats:
     # Downloads the video from youtube with 360p resolution
     # given the video URL nad the name of the file
     def downloadVideo(self, url, title):
-        path = os.getcwd() + '\\videos'
+        path = os.getcwd() + '/videos'
         title = reNameTitle(title)
         YouTube(url).streams.first().download(output_path=path, filename=title)
 
     # Coverts video from mp4 to mp3 given the name of
     # the file and the type of the output file eg: mp3, wav
     def convertVideoToSound(self, title, type):
-        VideoPath = os.getcwd() + '\\videos\\'
-        path = os.getcwd() + '\\audio\\'
+        VideoPath = os.getcwd() + '/videos/'
+        path = os.getcwd() + '/audio/'
         title = reNameTitle(title)
         video = VideoFileClip(VideoPath + title + '.mp4')
         video.audio.write_audiofile(path + title + '_audio.' + type)
@@ -87,7 +85,7 @@ def writeToVideoFile(youtubeStats):
         transcript = stats.getVideoTranscriptString()
         print("{0} Writing to file...".format(i+1))
         i+=1
-        with open(path + '\\'f"{reNameTitle(title)}.txt", "w") as file:
+        with open(path + '/'f"{reNameTitle(title)}.txt", "w") as file:
             file.write("Title\n\n" + title)
             file.write(
                 "\n--------------------------------------------------------------------\n")
@@ -121,7 +119,7 @@ def reNameTitle(title):
 
 # Helper function to create a directory
 def createDirectory(name):
-    path = os.getcwd() + '\\'+ name
+    path = os.getcwd() + '/'+ name
     try:
         os.mkdir(path)
     except OSError:
@@ -137,7 +135,7 @@ def readFile():
     #fileName = input("Enter the input file: ")
     videoIds = []
     urls = []
-    with open('testLinks.txt', "r") as file:
+    with open('./testLinks.txt', "r") as file:
         for line in file:
             videoIds.append(line.split("=", 1)[1].strip())
             urls.append(line.strip())
