@@ -96,7 +96,17 @@ def writeToVideoFile(youtubeStats):
             file.write(
                 "\n--------------------------------------------------------------------\n")
 
-
+def writeToJsonFile(youtubeStats):
+    path = createDirectory('Json_scripts')
+    i = 0
+    for stats in youtubeStats:
+        title = stats.getVideoTitle()
+        transcript = stats.getVideoTranscript()
+        print("{0} Writing to json file...".format(i+1))
+        i+=1
+        with open(path + '/'f"{reNameTitle(title)}.json", "w") as file:
+            json.dump(transcript, file)
+            
 #download all the videos in the input file
 def downloadAllVideos(youtubeStats):
     createDirectory('videos')   
@@ -155,6 +165,7 @@ def main():
     
     downloadAllVideos(youtubeStats)
     writeToVideoFile(youtubeStats)
+    writeToJsonFile(youtubeStats)
     convertAllVideosToSound(youtubeStats)
 
 if __name__ == "__main__":
