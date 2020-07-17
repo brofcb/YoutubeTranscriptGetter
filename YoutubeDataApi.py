@@ -51,7 +51,7 @@ class YoutubeStats:
         path = os.getcwd() + '/audio/'
         title = reNameTitle(title)
         video = VideoFileClip(VideoPath + title + '.mp4')
-        video.audio.write_audiofile(path + title + '_audio.' + type)
+        video.audio.write_audiofile(path + title + '.' + type)
 
     # Returns the video transcript as a dictionary with times
     def getVideoTranscript(self):
