@@ -12,7 +12,7 @@ API_KEY = None
 # This class holds all the video data
 class YoutubeStats:
     def __init__(self, url, id, API_KEY):
-        print(API_KEY)
+        
         callUrl = f"https://www.googleapis.com/youtube/v3/videos?part=snippet&id={id}&key={API_KEY}"
         self.respose = requests.get(callUrl)
         self.data = json.loads(self.respose.text)
@@ -164,7 +164,6 @@ def main():
     #Populating the objects with the data
     for i, id in enumerate(videoIds):
         youtubeStats.append(YoutubeStats(urls[i], id, API_KEY))
-    youtubeStats[0].printData()
     downloadAllVideos(youtubeStats)
     writeToVideoFile(youtubeStats)
     writeToJsonFile(youtubeStats)
