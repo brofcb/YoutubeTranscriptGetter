@@ -8,7 +8,7 @@ from youtube_transcript_api import YouTubeTranscriptApi
 from moviepy.editor import *
 
 
-API_KEY = "AIzaSyD32jTMAOgRKs9Ao4wn9Px-IF94CunvWyo"
+API_KEY = "YOUR API KEY"
 
 # This class holds all the video data
 
