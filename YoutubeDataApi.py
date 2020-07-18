@@ -6,6 +6,8 @@ import requests
 from pytube import YouTube
 from youtube_transcript_api import YouTubeTranscriptApi
 from moviepy.editor import *
+from bs4 import BeautifulSoup 
+import requests 
 
 API_KEY = None
 
@@ -13,9 +15,10 @@ API_KEY = None
 class YoutubeStats:
     def __init__(self, url, id, API_KEY):
         
-        callUrl = f"https://www.googleapis.com/youtube/v3/videos?part=snippet&id={id}&key={API_KEY}"
-        self.respose = requests.get(callUrl)
-        self.data = json.loads(self.respose.text)
+        #You can use the youtube data api v3 by uncommenting the following 3 lines and passing an API key to the class 
+        #callUrl = f"https://www.googleapis.com/youtube/v3/videos?part=snippet&id={id}&key={API_KEY}"
+        #self.respose = requests.get(callUrl)
+        #self.data = json.loads(self.respose.text)
         self.captionData = YouTubeTranscriptApi.get_transcript(id)
         self.url = url
         self.id = id
@@ -30,7 +33,12 @@ class YoutubeStats:
         return self.id
     # Returns the video title
     def getVideoTitle(self):
-        return self.data["items"][0]["snippet"]["title"]
+        source = requests.get(self.url).text
+        soup = BeautifulSoup(source,'html.parser')
+        Title = soup.title.text
+        print(Title)
+        Title = Title[:-10] 
+        return Title
 
     # Returns the video description as a string
     def getVideoDescription(self):
@@ -80,7 +88,7 @@ def writeToVideoFile(youtubeStats):
     i = 0
     for stats in youtubeStats:
         title = stats.getVideoTitle()
-        description = stats.getVideoDescription()
+        #description = stats.getVideoDescription()
         transcript = stats.getVideoTranscriptString()
         print("{0} Writing to file...".format(i+1))
         i+=1
@@ -88,9 +96,9 @@ def writeToVideoFile(youtubeStats):
             file.write("Title\n\n" + title)
             file.write(
                 "\n--------------------------------------------------------------------\n")
-            file.write("\nDescription\n\n" + description)
-            file.write(
-                "\n\n--------------------------------------------------------------------\n")
+            #file.write("\nDescription\n\n" + description)
+            #file.write(
+            #    "\n\n--------------------------------------------------------------------\n")
             file.write("\nTranscript\n\n" + transcript)
             file.write(
                 "\n--------------------------------------------------------------------\n")
@@ -155,8 +163,10 @@ def readFile():
 
 # A driver function to run the script
 def main():
-    ApiFile = open("API_KEY.txt", "r")
-    API_KEY = ApiFile.readline()
+    
+    #Uncomment if you want to use the Youtube data API
+    #ApiFile = open("API_KEY.txt", "r")
+    #API_KEY = ApiFile.readline()
     
     #Reading all the urls from the file
     videoIds, urls = readFile()
@@ -164,6 +174,7 @@ def main():
     #Populating the objects with the data
     for i, id in enumerate(videoIds):
         youtubeStats.append(YoutubeStats(urls[i], id, API_KEY))
+    
     downloadAllVideos(youtubeStats)
     writeToVideoFile(youtubeStats)
     writeToJsonFile(youtubeStats)
