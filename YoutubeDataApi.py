@@ -1,6 +1,7 @@
 import json
 import re
 import os
+import sys
 import urllib.request
 import requests
 from pytube import YouTube
@@ -152,7 +153,8 @@ def readFile():
     #fileName = input("Enter the input file: ")
     videoIds = []
     urls = []
-    with open('./testLinks.txt', "r") as file:
+    fileName = sys.argv[1]
+    with open(fileName, "r") as file:
         for line in file:
             videoIds.append(line.split("=", 1)[1].strip())
             urls.append(line.strip())
