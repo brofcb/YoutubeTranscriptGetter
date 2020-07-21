@@ -21,7 +21,10 @@ class YoutubeStats:
         #callUrl = f"https://www.googleapis.com/youtube/v3/videos?part=snippet&id={id}&key={API_KEY}"
         #self.respose = requests.get(callUrl)
         #self.data = json.loads(self.respose.text)
-        self.captionData = YouTubeTranscriptApi.get_transcript(id)
+        try:
+            self.captionData = YouTubeTranscriptApi.get_transcript(id)
+        except:
+            self.captionData = None
         self.url = url
         self.id = id
 
@@ -177,6 +180,9 @@ def main():
     youtubeStats = []
     #Populating the objects with the data
     for i, id in enumerate(videoIds):
+        temp=YoutubeStats(urls[i], id, API_KEY)
+        if(temp.captionData is None):
+            continue
         youtubeStats.append(YoutubeStats(urls[i], id, API_KEY))
     
     downloadAllVideos(youtubeStats)
