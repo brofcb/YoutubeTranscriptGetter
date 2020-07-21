@@ -49,15 +49,15 @@ class YoutubeStats:
     # Downloads the video from youtube with 360p resolution
     # given the video URL nad the name of the file
     def downloadVideo(self, url, title):
-        path = os.getcwd() + '/videos'
+        path = sys.argv[2] + 'videos'
         title = reNameTitle(title)
         YouTube(url).streams.first().download(output_path=path, filename=title)
 
     # Coverts video from mp4 to mp3 given the name of
     # the file and the type of the output file eg: mp3, wav
     def convertVideoToSound(self, title, type):
-        VideoPath = os.getcwd() + '/videos/'
-        path = os.getcwd() + '/audio/'
+        VideoPath = sys.argv[2]+ 'videos/'
+        path = sys.argv[2] + 'audio/'
         title = reNameTitle(title)
         video = VideoFileClip(VideoPath + title + '.mp4')
         video.audio.write_audiofile(path + title + '.' + type)
