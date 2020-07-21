@@ -2,6 +2,7 @@ import json
 import re
 import os
 import sys
+from google.colab import drive
 import urllib.request
 import requests
 from pytube import YouTube
@@ -137,7 +138,7 @@ def reNameTitle(title):
 
 # Helper function to create a directory
 def createDirectory(name):
-    path = os.getcwd() + '/'+ name
+    path = sys.argv[2] + name
     try:
         os.mkdir(path)
     except OSError:
@@ -154,7 +155,8 @@ def readFile():
     videoIds = []
     urls = []
     fileName = sys.argv[1]
-    with open(fileName, "r") as file:
+    path = sys.argv[2]
+    with open(path+fileName, "r") as file:
         for line in file:
             videoIds.append(line.split("=", 1)[1].strip())
             urls.append(line.strip())
