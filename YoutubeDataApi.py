@@ -27,6 +27,7 @@ class YoutubeStats:
             self.captionData = None
         self.url = url
         self.id = id
+        self.title = self.getVideoTitle()
 
     def printData(self):
         print(self.data)
@@ -51,17 +52,17 @@ class YoutubeStats:
 
     # Downloads the video from youtube with 360p resolution
     # given the video URL nad the name of the file
-    def downloadVideo(self, url, title):
+    def downloadVideo(self):
         path = sys.argv[2] + 'videos'
-        title = reNameTitle(title)
-        YouTube(url).streams.first().download(output_path=path, filename=title)
+        title = reNameTitle(self.title)
+        YouTube(self.url).streams.first().download(output_path=path, filename=title)
 
     # Coverts video from mp4 to mp3 given the name of
     # the file and the type of the output file eg: mp3, wav
-    def convertVideoToSound(self, title, type):
+    def convertVideoToSound(self, type="wav"):
         VideoPath = sys.argv[2]+ 'videos/'
         path = sys.argv[2] + 'audio/'
-        title = reNameTitle(title)
+        title = reNameTitle(self.title)
         video = VideoFileClip(VideoPath + title + '.mp4')
         video.audio.write_audiofile(path + title + '.' + type)
 
@@ -81,7 +82,15 @@ class YoutubeStats:
                 transcript += str(caption["text"])
                 addNewLine = True
         return transcript
-
+    
+    def writeToJsonFile(self, path):
+        i = 0
+        title = self.title
+        transcript = self.getVideoTranscript()
+        print("{0} Writing to json file...".format(i+1))
+        i+=1
+        with open(path + '/'f"{reNameTitle(title)}.json", "w") as file:
+            json.dump(transcript, file)
 
 
 # This function create a file for every video
@@ -92,7 +101,7 @@ def writeToVideoFile(youtubeStats):
     path = createDirectory('video_scripts')
     i = 0
     for stats in youtubeStats:
-        title = stats.getVideoTitle()
+        title = stats.title
         #description = stats.getVideoDescription()
         transcript = stats.getVideoTranscriptString()
         print("{0} Writing to file...".format(i+1))
@@ -108,11 +117,11 @@ def writeToVideoFile(youtubeStats):
             file.write(
                 "\n--------------------------------------------------------------------\n")
 
-def writeToJsonFile(youtubeStats):
+def writeAllToJsonFile(youtubeStats):
     path = createDirectory('Json_scripts')
     i = 0
     for stats in youtubeStats:
-        title = stats.getVideoTitle()
+        title = stats.title
         transcript = stats.getVideoTranscript()
         print("{0} Writing to json file...".format(i+1))
         i+=1
@@ -126,12 +135,12 @@ def downloadAllVideos(youtubeStats):
     for stats in youtubeStats:
         print("{0} Downloading...".format(i+1))
         i+=1
-        stats.downloadVideo(stats.getURL(), stats.getVideoTitle())        
+        stats.downloadVideo(stats.getURL(), stats.title)        
 
 def convertAllVideosToSound(youtubeStats):
     createDirectory('audio')
     for stats in youtubeStats:
-        stats.convertVideoToSound(stats.getVideoTitle(), 'wav')
+        stats.convertVideoToSound(stats.title, 'wav')
 
 
 # Helper function to rename the file
@@ -179,16 +188,21 @@ def main():
     videoIds, urls = readFile()
     youtubeStats = []
     #Populating the objects with the data
+    json_path = createDirectory('Json_scripts')
+    createDirectory('audio')
+    createDirectory('videos')
     for i, id in enumerate(videoIds):
         temp=YoutubeStats(urls[i], id, API_KEY)
         if(temp.captionData is None):
             continue
-        youtubeStats.append(YoutubeStats(urls[i], id, API_KEY))
-    
-    downloadAllVideos(youtubeStats)
-    writeToVideoFile(youtubeStats)
-    writeToJsonFile(youtubeStats)
-    convertAllVideosToSound(youtubeStats)
+        temp.downloadVideo()
+        temp.convertVideoToSound()
+        temp.writeToJsonFile(json_path)
+        #youtubeStats.append(YoutubeStats(urls[i], id, API_KEY))
+    #downloadAllVideos(youtubeStats)
+    #writeToVideoFile(youtubeStats)
+    #writeToJsonFile(youtubeStats)
+    #convertAllVideosToSound(youtubeStats)
 
 if __name__ == "__main__":
     main()
